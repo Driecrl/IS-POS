@@ -1,0 +1,8 @@
+{
+  "module_name": "stdfenv",
+  "author": ["IzanamiiDevv"],
+  "module_id": "LIB-CFG-001",
+  "version": 1,
+  "depends_on": [],
+  "uses": ["lib"]
+}

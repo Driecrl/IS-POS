@@ -1,0 +1,12 @@
+{
+  "module_name": "stdbenv",
+  "author": [
+    "IzanamiiDevv"
+  ],
+  "module_id": "LIB-CFG-002",
+  "version": 1,
+  "depends_on": [],
+  "uses": [
+    "lib"
+  ]
+}
