@@ -1,0 +1,8 @@
+{
+  "module_name": "Camera Scanner UI",
+  "author": ["Drie"],
+  "module_id": "CMP-SCN-001",
+  "version": 1,
+  "depends_on": ["Scanner"],
+  "uses": ["components"]
+}

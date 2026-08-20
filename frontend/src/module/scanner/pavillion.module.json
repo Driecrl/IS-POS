@@ -1,0 +1,8 @@
+{
+  "module_name": "Scanner",
+  "author": ["Drie"],
+  "module_id": "LIB-SCN-001",
+  "version": 1,
+  "depends_on": [],
+  "uses": ["lib"]
+}

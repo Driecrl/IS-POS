@@ -1,0 +1,8 @@
+{
+  "module_name": "Suppliers Module",
+  "author": ["Drie"],
+  "module_id": "LIB-API-006",
+  "version": 1,
+  "depends_on": ["Authentication Module"],
+  "uses": ["lib"]
+}

@@ -1,0 +1,8 @@
+{
+  "module_name": "Navbar Component",
+  "author": ["Drie"],
+  "module_id": "CMP-NAV-001",
+  "version": 1,
+  "depends_on": ["Authentication Module"],
+  "uses": ["components"]
+}

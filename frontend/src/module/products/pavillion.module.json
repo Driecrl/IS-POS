@@ -1,0 +1,8 @@
+{
+  "module_name": "Products API",
+  "author": ["Drie"],
+  "module_id": "LIB-API-002",
+  "version": 1,
+  "depends_on": ["API Client"],
+  "uses": ["lib"]
+}

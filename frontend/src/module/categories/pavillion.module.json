@@ -1,0 +1,8 @@
+{
+  "module_name": "Categories Module",
+  "author": ["Drie"],
+  "module_id": "LIB-API-005",
+  "version": 1,
+  "depends_on": ["Authentication Module"],
+  "uses": ["lib"]
+}

@@ -1,0 +1,8 @@
+{
+  "module_name": "Reports Module",
+  "author": ["Drie"],
+  "module_id": "LIB-API-007",
+  "version": 1,
+  "depends_on": ["Authentication Module"],
+  "uses": ["lib"]
+}

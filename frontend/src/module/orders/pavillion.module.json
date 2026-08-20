@@ -1,0 +1,8 @@
+{
+  "module_name": "Orders Module",
+  "author": ["Drie"],
+  "module_id": "LIB-API-004",
+  "version": 1,
+  "depends_on": ["Authentication Module"],
+  "uses": ["lib"]
+}

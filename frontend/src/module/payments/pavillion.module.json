@@ -1,0 +1,8 @@
+{
+  "module_name": "Payments Module",
+  "author": ["Drie"],
+  "module_id": "LIB-PAY-001",
+  "version": 1,
+  "depends_on": ["Authentication Module", "Orders Module"],
+  "uses": ["lib"]
+}
