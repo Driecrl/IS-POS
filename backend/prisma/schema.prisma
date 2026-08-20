@@ -1,0 +1,274 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  OUT_OF_STOCK
+}
+
+enum MovementType {
+  STOCK_IN
+  STOCK_OUT
+  ADJUSTMENT
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  GCASH
+  MAYA
+}
+
+enum TransactionStatus {
+  COMPLETED
+  REFUNDED
+  FAILED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  EXPORT
+  VOID
+  ADJUST
+  FAILED
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  passwordHash  String   @map("password_hash")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  userRole      UserRole?
+  orders        Order[]
+  stockMovements StockMovement[]
+
+  @@map("users")
+}
+
+model Role {
+  id             String  @id @default(uuid())
+  roleName       String  @unique @map("role_name")
+
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id               String @id @default(uuid())
+  permissionName   String @unique @map("permission_name")
+
+  rolePermissions  RolePermission[]
+
+  @@map("permissions")
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String @unique @map("user_id")
+  roleId String @map("role_id")
+
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@index([roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  id           String @id @default(uuid())
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Supplier {
+  id          String   @id @default(uuid())
+  name        String
+  contactName String?  @map("contact_name")
+  email       String?
+  phone       String?
+  address     String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  products Product[]
+
+  @@map("suppliers")
+}
+
+model Product {
+  id         String        @id @default(uuid())
+  categoryId String        @map("category_id")
+  supplierId String?       @map("supplier_id")
+  name       String
+  sku        String        @unique
+  barcode    String?       @unique
+  price      Decimal       @db.Decimal(10, 2)
+  status     ProductStatus @default(ACTIVE)
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt @map("updated_at")
+
+  category      Category        @relation(fields: [categoryId], references: [id])
+  supplier      Supplier?       @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  stockLevel    StockLevel?
+  stockMovements StockMovement[]
+  orderItems    OrderItem[]
+
+  @@index([categoryId])
+  @@index([supplierId])
+  @@map("products")
+}
+
+model StockLevel {
+  id                 String   @id @default(uuid())
+  productId          String   @unique @map("product_id")
+  quantity           Int      @default(0)
+  lowStockThreshold  Int      @default(10) @map("low_stock_threshold")
+  highStockThreshold Int      @default(100) @map("high_stock_threshold")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("stock_levels")
+}
+
+model StockMovement {
+  id        String       @id @default(uuid())
+  productId String       @map("product_id")
+  userId    String       @map("user_id")
+  type      MovementType
+  quantity  Int
+  reason    String?
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  product Product @relation(fields: [productId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@index([productId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("stock_movements")
+}
+
+model Order {
+  id         String      @id @default(uuid())
+  cashierId  String      @map("cashier_id")
+  total      Decimal     @db.Decimal(10, 2)
+  discount   Decimal     @default(0) @db.Decimal(10, 2)
+  status     OrderStatus @default(PENDING)
+  createdAt  DateTime    @default(now()) @map("created_at")
+
+  cashier     User        @relation(fields: [cashierId], references: [id])
+  orderItems  OrderItem[]
+  transaction Transaction?
+
+  @@index([cashierId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String  @map("order_id")
+  productId String  @map("product_id")
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2) @map("unit_price")
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+model Transaction {
+  id            String             @id @default(uuid())
+  orderId       String             @unique @map("order_id")
+  amountPaid    Decimal            @db.Decimal(10, 2) @map("amount_paid")
+  paymentMethod PaymentMethod      @map("payment_method")
+  change        Decimal            @db.Decimal(10, 2)
+  status        TransactionStatus  @default(COMPLETED)
+  createdAt     DateTime           @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  @@index([createdAt])
+  @@map("transactions")
+}
+
+model AuditLog {
+  id          String      @id @default(uuid())
+  userId      String?     @map("user_id")
+  username    String?
+  userRole    String?     @map("user_role")
+  module      String
+  action      AuditAction
+  description String
+  oldValue    String?     @map("old_value")
+  newValue    String?     @map("new_value")
+  ipAddress   String?     @map("ip_address")
+  status      String      @default("Success")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([module])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model BillingReport {
+  id                 String   @id @default(uuid())
+  reportDate         DateTime @unique @map("report_date") @db.Date
+  totalSales         Decimal  @default(0) @db.Decimal(10, 2) @map("total_sales")
+  totalDiscount      Decimal  @default(0) @db.Decimal(10, 2) @map("total_discount")
+  totalTax           Decimal  @default(0) @db.Decimal(10, 2) @map("total_tax")
+  totalTransactions  Int      @default(0) @map("total_transactions")
+  generatedBy        String?  @map("generated_by")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  @@map("billing_reports")
+}
