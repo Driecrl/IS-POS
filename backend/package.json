@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --exec ts-node --transpile-only src/index.ts",
-    "dev:simple": "ts-node --transpile-only src/index.ts"
+    "dev:simple": "ts-node --transpile-only src/index.ts",
+    "build": "npx prisma generate --schema=../prisma/schema.prisma",
+    "start": "ts-node --transpile-only src/index.ts"
   },
   "keywords": [],
   "author": "",
