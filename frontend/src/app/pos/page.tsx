@@ -47,7 +47,7 @@ export default function POSPage() {
 
   async function loadProducts(authToken: string) {
     try {
-      const data = await getProducts(authToken);
+      const data = await getProducts();
       setProducts(data.filter((p) => p.status === "ACTIVE"));
     } catch (err: any) {
       setError(err.message);

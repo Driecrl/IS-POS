@@ -51,7 +51,7 @@ export default function DashboardPage() {
       })
       .catch((err) => setError(err.message));
 
-    getProducts(session.token)
+    getProducts()
       .then((products) => {
         const counts: Record<string, number> = {};
         for (const p of products) {
